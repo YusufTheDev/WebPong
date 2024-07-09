@@ -1,0 +1,49 @@
+body
+{
+    margin:0;
+    background-color: gray;
+    overflow: auto;
+}
+
+#start
+{
+    position:absolute;
+    display:block;
+    top:0vh;
+    left:40vw;
+    height:5vh;
+    width:15vw;
+    background-color: green;
+}
+#player
+{
+    position:absolute;
+    display:block;
+    top:0vh;
+    height: 10vh;
+    width: 2vw;
+    background-color: rgb(43, 43, 43);
+}
+
+#enemy
+{
+    position:absolute;
+    display:block;
+    top:0vh;
+    right:0vw;
+    height: 10vh;
+    width: 2vw;
+    background-color: rgb(43, 43, 43);
+}
+
+#ball
+{
+    position:absolute;
+    display:none;
+    top: 50vh;
+    left:50vw;
+    height:2vh;
+    width: 2vw;
+    border-radius: 1vw;
+    background-color: blue;
+}
