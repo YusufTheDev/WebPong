@@ -19,7 +19,8 @@ body
 {
     position:absolute;
     display:block;
-    top:0vh;
+    top:50vh;
+    left: 0vw;
     height: 10vh;
     width: 2vw;
     background-color: rgb(43, 43, 43);
@@ -29,10 +30,34 @@ body
 {
     position:absolute;
     display:block;
-    top:0vh;
+    top:50vh;
     right:0vw;
     height: 10vh;
     width: 2vw;
+    background-color: rgb(43, 43, 43);
+}
+
+#playerScore
+{
+    position:absolute;
+    display:block;
+    top: 1h;
+    left: 1vw;
+    text-align: left;
+    font-size: 3vw;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: rgb(43, 43, 43);
+}
+
+#enemyScore
+{
+    position:absolute;
+    display:block;
+    top: 1h;
+    right: 1vw;
+    text-align: left;
+    font-size: 3vw;
+    font-family: 'Courier New', Courier, monospace;
     background-color: rgb(43, 43, 43);
 }
 
@@ -42,7 +67,7 @@ body
     display:none;
     top: 50vh;
     left:50vw;
-    height:2vh;
+    height:2vw;
     width: 2vw;
     border-radius: 1vw;
     background-color: blue;

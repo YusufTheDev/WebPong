@@ -2,14 +2,11 @@ const express = require("express");
 const http = require("http");
 const socketIO = require("socket.io");
 const path = require("path");
+const {Paddle, Ball} = require("./GameObjects");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server, {
-    cors: {
-        methods: ["GET", "POST"]
-    }
-});
+const io = socketIO(server);
 const clientPath = path.join(__dirname, "../client");
 const PORT = process.env.PORT || 3000;
 app.use(express.static(clientPath));
@@ -17,41 +14,42 @@ app.use(express.static(clientPath));
 let waiting = undefined;
 let lastRoomId = 0;
 const games = {};
+const gameClasses = {};
+
+//screen dimensions
+let screenSize = 1000;
+
 
 function startGame(player1, player2, lastRoomId)
 {
-    for(let id in games[lastRoomId])
+    for(let name in gameClasses[lastRoomId])
     {
-        if (id === "ballpos") {
+        const obj = gameClasses[lastRoomId];
+        if (obj[name].vel.x != 0) {
             continue;
         }
         
         let socket = undefined;
-        if (id === player1.id)
+        let object = undefined;
+        if (obj[name].id === player1.id)
+        {
             socket = player1;
+            object = obj[name];
+        }
         else
+        {
             socket = player2;
+            object = obj[name];
+        }
 
         socket.on("keys", (data) =>
         {
-            if(data.w === true && data.s === true)
-            {
-                games[lastRoomId][id].currentKey = "";
-            }
-            else if(data.w === true)
-            {
-                games[lastRoomId][id].currentKey = "w";
-            }
-            else if(data.s === true)
-            {
-                games[lastRoomId][id].currentKey = "s";
-            }
-            else{
-                games[lastRoomId][id].currentKey = "";
-            }
+            object.playerControl(data);
         });
     }
 }
+
+//waiting is always left and other is always right
 
 io.on("connection", (socket) => {
     if(waiting !== undefined)
@@ -59,9 +57,32 @@ io.on("connection", (socket) => {
         socket.join(`${lastRoomId}`)
         waiting.join(`${lastRoomId}`)
         io.to(`${lastRoomId}`).emit("joined", `${lastRoomId}`);
-        games[`${lastRoomId}`] = { ballpos: { x: 0, y: 0 } };
-        games[`${lastRoomId}`][socket.id] = { currentKey: "", pos: 0 };
-        games[`${lastRoomId}`][waiting.id] = { currentKey: "", pos: 0 };
+        gameClasses[`${lastRoomId}`] = {
+            leftPaddle : new Paddle(20, 100, 0, 450, waiting.id),
+            rightPaddle: new Paddle(20, 100, 980, 450, socket.id),
+            ball: new Ball(20, 20, 490, 490, 10, 0)
+        };
+        games[`${lastRoomId}`] = { 
+            ballpos: {
+                x: gameClasses[`${lastRoomId}`].ball.pos.x, 
+                y: gameClasses[`${lastRoomId}`].ball.pos.y, 
+                width: gameClasses[`${lastRoomId}`].ball.width, 
+                height: gameClasses[`${lastRoomId}`].ball.height
+            }
+        };
+        games[`${lastRoomId}`][socket.id] = {
+            x: gameClasses[`${lastRoomId}`].rightPaddle.pos.x,
+            y: gameClasses[`${lastRoomId}`].rightPaddle.pos.y,
+            width: gameClasses[`${lastRoomId}`].rightPaddle.width,
+            height: gameClasses[`${lastRoomId}`].rightPaddle.height,
+            points: 0
+        };
+        games[`${lastRoomId}`][waiting.id] = { 
+            x: gameClasses[`${lastRoomId}`].leftPaddle.pos.x ,
+            y: gameClasses[`${lastRoomId}`].leftPaddle.pos.y,
+            width: gameClasses[`${lastRoomId}`].leftPaddle.width,
+            height: gameClasses[`${lastRoomId}`].leftPaddle.height,
+            points: 0};
         startGame(socket, waiting, `${lastRoomId}`);
         waiting = undefined;
         lastRoomId += 1;
@@ -76,25 +97,43 @@ io.on("connection", (socket) => {
 
 
 setInterval(() => {
-    for (let roomId in games) {
-        for (let id in games[roomId]) {
-            if (id === "ballpos") {
-                continue;
-                //update ball when it exists here because... -_-
-            }
+    for (let roomId in gameClasses) {
+        gameClasses[roomId].leftPaddle.calcNextFrame(screenSize);
+        gameClasses[roomId].rightPaddle.calcNextFrame(screenSize);
+        gameClasses[roomId].ball.paddleBounce(gameClasses[roomId].leftPaddle);
+        gameClasses[roomId].ball.paddleBounce(gameClasses[roomId].rightPaddle);
 
-            if (games[roomId][id].currentKey === "w")
+        if(gameClasses[roomId].ball.calcNextFrame() === false)
+        {
+            for(let id in games[roomId])
             {
-                games[roomId][id].pos += 1;
+                if(id === "ballpos")
+                    continue;
+                else if(Math.abs(games[roomId][id].x - gameClasses[roomId].ball.pos.x) > 500)
+                {
+                    games[roomId][id].points +=1;
+                }
             }
-            else if(games[roomId][id].currentKey === "s")
+        }
+        for(let id in games[roomId])
+        {
+            if(id === "ballpos")
             {
-                games[roomId][id].pos -= 1;
+                games[roomId][id].x == gameClasses[roomId].ball.pos.x;
+                games[roomId][id].y == gameClasses[roomId].ball.pos.y;
+            }
+            else if (id == gameClasses[roomId].leftPaddle.id)
+            {
+                games[roomId][id].x == gameClasses[roomId].leftPaddle.pos.x;
+                games[roomId][id].y == gameClasses[roomId].leftPaddle.pos.y;
+            }
+            else
+            {
+                games[roomId][id].x == gameClasses[roomId].rightPaddle.pos.x;
+                games[roomId][id].y == gameClasses[roomId].rightPaddle.pos.y;
             }
         }
         io.to(roomId).emit("change", games[roomId]);
-        //      update p1, p2, ball
-        //      emit
     }
 }, 50);
 
