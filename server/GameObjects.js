@@ -40,12 +40,13 @@ class Paddle extends GameObject {
     }
     playerControl(keys)
     {
+        console.log("move");
         if(keys.w === true && keys.s === true)
             this.vel.y = 0;
         else if (keys.w === true)
-            this.vel.y = -2;
+            this.vel.y = -20;
         else if (keys.s === true)
-            this.vel.y = 2;
+            this.vel.y = 20;
         else
             this.vel.y = 0;
     }
@@ -56,9 +57,9 @@ class Paddle extends GameObject {
         {
             this.nextPos.y = 0;
         }
-        else if(this.nextPos.y > screenSize)
+        else if(this.nextPos.y + this.height > screenSize)
         {
-            this.nextPos.y = screenSize;
+            this.nextPos.y = screenSize - this.height;
         }
     }
 }
@@ -67,33 +68,43 @@ class Ball extends GameObject{
     constructor(width, height, posX, posY, velX, velY) {
         super(width, height, posX, posY);
         this.startPos = {x: posX, y: posY};
-        this.vel = {velX, velY};
+        this.vel = {x: velX, y: velY};
         this.startVel = {x: velX, y:velY}
         this.lastScore = 1;
+        this.alive = false;
     }
 
     ballStart()
     {
+        this.alive = true;
         this.nextPos.x = this.startPos.x;
         this.nextPos.y = this.startPos.y;
         this.vel.x = this.startVel.x * this.lastScore; 
         this.vel.y = this.startVel.y * this.lastScore;
-
     }
+
     paddleBounce(object)
     {
+        if(!this.alive)
+            return;
+        
         if(this.collision(object))
         {
             if(this.nextPos.x > this.pos.x)
-                this.nextPos.x = object.nextPos.x;
+            {
+                this.nextPos.x = object.nextPos.x - this.width;
+                console.log("bounce");
+            }
             else
                 this.nextPos.x = object.nextPos.x + object.width;
             this.vel.x *= -1.1;
-            this.vel.y = (this.nextPos.y + this.height / 2) - (object.nextPos.y + object.height / 2);
+            this.vel.y = ((this.nextPos.y + this.height / 2) - (object.nextPos.y + object.height / 2)) / 10;
         }
     }
 
     calcNextFrame(screenSize) {
+        if(!this.alive)
+            return;
         super.calcNextFrame();
         if(this.nextPos.y < 0)
         {
@@ -109,11 +120,8 @@ class Ball extends GameObject{
 
         if(this.nextPos.x + this.width > screenSize || this.nextPos.x < 0)
         {
-            this.ballStart();
-            return false;
-        }
-        else{
-            return true;
+            console.log("die");
+            this.alive = false;
         }
     }
 }

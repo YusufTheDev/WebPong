@@ -2,23 +2,40 @@ body
 {
     margin:0;
     background-color: gray;
-    overflow: auto;
+    overflow: hidden;
+}
+
+#player, #enemy, #ball
+{
+    transition: left 0.025s linear, top 0.025s linear;
 }
 
 #start
 {
     position:absolute;
     display:block;
-    top:0vh;
-    left:40vw;
-    height:5vh;
+    top:30vh;
+    left:42.5vw;
+    height:3vw;
     width:15vw;
-    background-color: green;
+    background-color: rgb(39, 65, 39);
+    font-size: 2vw;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#waiting
+{
+    position:absolute;
+    display:none;
+    top:20vh;
+    left:42.5vw;
+    font-size: 2vw;
+    font-family: 'Courier New', Courier, monospace;
 }
 #player
 {
     position:absolute;
-    display:block;
+    display:none;
     top:50vh;
     left: 0vw;
     height: 10vh;
@@ -29,7 +46,7 @@ body
 #enemy
 {
     position:absolute;
-    display:block;
+    display:none;
     top:50vh;
     right:0vw;
     height: 10vh;
@@ -65,8 +82,8 @@ body
 {
     position:absolute;
     display:none;
-    top: 50vh;
-    left:50vw;
+    top: 0vh;
+    left:0vw;
     height:2vw;
     width: 2vw;
     border-radius: 1vw;

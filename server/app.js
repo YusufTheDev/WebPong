@@ -50,17 +50,21 @@ function startGame(player1, player2, lastRoomId)
 }
 
 //waiting is always left and other is always right
-
 io.on("connection", (socket) => {
+    socket.on("disconnect", ()=>{
+        if(socket === waiting)
+            waiting = undefined;
+    });
+
     if(waiting !== undefined)
     {
         socket.join(`${lastRoomId}`)
         waiting.join(`${lastRoomId}`)
         io.to(`${lastRoomId}`).emit("joined", `${lastRoomId}`);
         gameClasses[`${lastRoomId}`] = {
-            leftPaddle : new Paddle(20, 100, 0, 450, waiting.id),
-            rightPaddle: new Paddle(20, 100, 980, 450, socket.id),
-            ball: new Ball(20, 20, 490, 490, 10, 0)
+            leftPaddle : new Paddle(20, 200, 0, 450, waiting.id),
+            rightPaddle: new Paddle(20, 200, 980, 450, socket.id),
+            ball: new Ball(20, 40, 490, 490, 4, 0)
         };
         games[`${lastRoomId}`] = { 
             ballpos: {
@@ -84,6 +88,7 @@ io.on("connection", (socket) => {
             height: gameClasses[`${lastRoomId}`].leftPaddle.height,
             points: 0};
         startGame(socket, waiting, `${lastRoomId}`);
+        gameClasses[lastRoomId].ball.ballStart();
         waiting = undefined;
         lastRoomId += 1;
     }
@@ -92,18 +97,24 @@ io.on("connection", (socket) => {
         socket.emit("waiting");
         waiting = socket;
     }
-
 });
+
 
 
 setInterval(() => {
     for (let roomId in gameClasses) {
         gameClasses[roomId].leftPaddle.calcNextFrame(screenSize);
         gameClasses[roomId].rightPaddle.calcNextFrame(screenSize);
-        gameClasses[roomId].ball.paddleBounce(gameClasses[roomId].leftPaddle);
-        gameClasses[roomId].ball.paddleBounce(gameClasses[roomId].rightPaddle);
+        gameClasses[roomId].ball.calcNextFrame(screenSize);
 
-        if(gameClasses[roomId].ball.calcNextFrame() === false)
+        gameClasses[roomId].ball.paddleBounce(gameClasses[roomId].rightPaddle);
+        gameClasses[roomId].ball.paddleBounce(gameClasses[roomId].leftPaddle);
+
+        gameClasses[roomId].ball.updateFrame();
+        gameClasses[roomId].leftPaddle.updateFrame();
+        gameClasses[roomId].rightPaddle.updateFrame();
+        
+        if(gameClasses[roomId].ball.alive === false)
         {
             for(let id in games[roomId])
             {
@@ -112,30 +123,41 @@ setInterval(() => {
                 else if(Math.abs(games[roomId][id].x - gameClasses[roomId].ball.pos.x) > 500)
                 {
                     games[roomId][id].points +=1;
+                    gameClasses[roomId].ball.lastScore *=-1;
                 }
             }
+            gameClasses[roomId].ball.ballStart();
         }
+
         for(let id in games[roomId])
         {
             if(id === "ballpos")
             {
-                games[roomId][id].x == gameClasses[roomId].ball.pos.x;
-                games[roomId][id].y == gameClasses[roomId].ball.pos.y;
+                games[roomId][id].x = gameClasses[roomId].ball.pos.x;
+                games[roomId][id].y = gameClasses[roomId].ball.pos.y;
             }
             else if (id == gameClasses[roomId].leftPaddle.id)
             {
-                games[roomId][id].x == gameClasses[roomId].leftPaddle.pos.x;
-                games[roomId][id].y == gameClasses[roomId].leftPaddle.pos.y;
+                games[roomId][id].x = gameClasses[roomId].leftPaddle.pos.x;
+                games[roomId][id].y = gameClasses[roomId].leftPaddle.pos.y;
+                if(games[roomId][id].points >=15)
+                {
+                    //player win
+                }
             }
             else
             {
-                games[roomId][id].x == gameClasses[roomId].rightPaddle.pos.x;
-                games[roomId][id].y == gameClasses[roomId].rightPaddle.pos.y;
+                games[roomId][id].x = gameClasses[roomId].rightPaddle.pos.x;
+                games[roomId][id].y = gameClasses[roomId].rightPaddle.pos.y;
+                if(games[roomId][id].points >=15)
+                {
+                    //player win
+                }
             }
         }
         io.to(roomId).emit("change", games[roomId]);
     }
-}, 50);
+}, 25);
 
 // Server port
 server.listen(PORT, () => {
