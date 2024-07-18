@@ -1,8 +1,25 @@
 const keys = {w:false , s:false};
+let screenSize;
+let maxScore;
+let leadScore;
+
+function setWindowSize() {
+    if (window.innerWidth > window.innerHeight) {
+        document.getElementById("gameSpace").style.width = "90vh";
+        document.getElementById("gameSpace").style.height = "90vh";
+    } else {
+        document.getElementById("gameSpace").style.width = "90vw";
+        document.getElementById("gameSpace").style.height = "90vw";
+    }
+}
+
+window.addEventListener("resize", () => {
+    setWindowSize();
+});
 
 function start()
 {
-    const socket = io();
+    const socket = io("/");
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "w")
@@ -26,15 +43,19 @@ function start()
             keys.s = false;
         }
         socket.emit("keys", keys);
+        console.log("ok")
     });
 
-    socket.on("waiting", ()=>{
-        console.log("nigger");
+    socket.on("waiting", () => {
         document.getElementById("waiting").style.display = "block";
         document.getElementById("start").style.display = "none";
     })
     
-    socket.on("joined", () =>{
+    socket.on("joined", (data) => {
+        screenSize = data.size;
+        maxScore = data.score;
+        leadScore = 0;
+        document.getElementById("gameSpace").style.display = "block";
         document.getElementById("player").style.display = "block";
         document.getElementById("enemy").style.display = "block";
         document.getElementById("ball").style.display = "block";
@@ -43,6 +64,7 @@ function start()
         document.getElementById("start").style.display = "none";
         document.getElementById("waiting").style.display = "none";
         console.log("joined");
+        setWindowSize();
     });
     
     socket.on("change", (data) => {
@@ -51,58 +73,60 @@ function start()
         {
             if(id === "ballpos")
             {
-                console.log(`${data[id].x}`);
-                ballDraw(data[id].x, data[id].y, data[id].width, data[id].height);
+                // console.log(`${data[id].x}`);
+                entityDraw("ball", data[id].x, data[id].y, data[id].width, data[id].height);
+                continue;
             }
-            else if(id === socket.id)
+            
+            if(id === socket.id)
             {
-                console.log("player, " + data[id].points);
-                playerDraw(data[id].x, data[id].y, data[id].width, data[id].height);
-                if(data[id].x > 500)
-                {
-                    rightPointsDraw(data[id].points);
-                }
-                else{
-                    leftPointsDraw(data[id].points);
-                }
+                // console.log("player, " + data[id].points);
+                entityDraw("player", data[id].x, data[id].y, data[id].width, data[id].height);
             }
-            else{
-                console.log("enemy, " + data[id].points);
-                enemyDraw(data[id].x, data[id].y,data[id].width, data[id].height);
-                if(data[id].x > 500)
-                {
-                    rightPointsDraw(data[id].points);
-                }
-                else{
-                    leftPointsDraw(data[id].points);
-                }
+            else {
+                // console.log("enemy, " + data[id].points);
+                entityDraw("enemy", data[id].x, data[id].y,data[id].width, data[id].height);
+            }
+
+            if(data[id].x > screenSize/2) {
+                rightPointsDraw(data[id].points);
+            }
+            else {
+                leftPointsDraw(data[id].points);
+            }
+
+            if (data[id].points > leadScore) {
+                leadScore = data[id].points;
             }
         }
     });
+
+    socket.on("gameEnd", (data) => {
+        const endScreen = document.getElementById("endScreen");
+        if (leadScore !== maxScore) {
+            if (data === socket.id) {
+                endScreen.textContent = "lost by self disconnect";
+            } else {
+                endScreen.textContent = "won by opponent disconnect";
+            }
+        } else {
+            if (data === socket.id) {
+                endScreen.textContent = "lost by score";
+            } else {
+                endScreen.textContent = "won by score";
+            }
+        }
+        endScreen.style.display = "block";
+        socket.disconnect();
+    });
 }
 
-function playerDraw(posx, posy, width, height)
+function entityDraw(id, posx, posy, width, height)
 {
-    document.getElementById("player").style.left = posx/10 + "vw";
-    document.getElementById("player").style.top = posy/10 + "vh";
-    document.getElementById("player").style.width = width/10 + "vw";
-    document.getElementById("player").style.height = height/10 + "vh";
-}
-
-function enemyDraw(posx, posy, width, height)
-{
-    document.getElementById("enemy").style.left = posx/10 + "vw";
-    document.getElementById("enemy").style.top = posy/10 + "vh";
-    document.getElementById("enemy").style.width = width/10 + "vw";
-    document.getElementById("enemy").style.height = height/10 + "vh";
-}
-
-function ballDraw(posx, posy, width, height)
-{
-    document.getElementById("ball").style.left = posx/10 + "vw";
-    document.getElementById("ball").style.top = posy/10 + "vh";
-    document.getElementById("ball").style.width = width/10 + "vw";
-    document.getElementById("ball").style.height = height/10 + "vh";
+    document.getElementById(id).style.left = posx/(screenSize/100) + "%";
+    document.getElementById(id).style.top = posy/(screenSize/100) + "%";
+    document.getElementById(id).style.width = width/(screenSize/100) + "%";
+    document.getElementById(id).style.height = height/(screenSize/100) + "%";
 }
 
 function leftPointsDraw(points)
@@ -114,4 +138,3 @@ function rightPointsDraw(points)
 {
     document.getElementById("enemyScore").textContent = "Score: " + points;
 }
-

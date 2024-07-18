@@ -2,16 +2,20 @@
 <html>
     <head>
 		<link rel="stylesheet" href="style.css">
-		<title>Ping Pong</title>
+		<title>WebPong</title>
 	</head>
     <body>
-        <button id="start" onclick = "start()">Enter Queue</button>
+        <div id="gameSpace">
+            <div id="player"></div>
+            <div id="enemy"></div>
+            <div id="ball"></div>
+        </div>
+        <button id="start" onclick="start()">Enter Queue</button>
         <div id="waiting">Waiting</div>
-        <div id="player"></div>
-        <div id="enemy"></div>
-        <div id="ball"></div>
         <div id="playerScore"></div>
         <div id="enemyScore"></div>
+        <div id="endScreen"></div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
         <script src="client.js"></script>
     </body>

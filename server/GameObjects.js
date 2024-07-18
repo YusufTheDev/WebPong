@@ -33,20 +33,22 @@ class GameObject {
 }
 
 class Paddle extends GameObject {
-    constructor(width, height, posX, posY, id) {
+    constructor(width, height, posX, posY, speed, id) {
         super(width, height, posX, posY);
+        this.speed = speed;
         this.points = 0;
         this.id = id;
     }
+
     playerControl(keys)
     {
         console.log("move");
         if(keys.w === true && keys.s === true)
             this.vel.y = 0;
         else if (keys.w === true)
-            this.vel.y = -20;
+            this.vel.y = -this.speed;
         else if (keys.s === true)
-            this.vel.y = 20;
+            this.vel.y = this.speed;
         else
             this.vel.y = 0;
     }
@@ -65,8 +67,8 @@ class Paddle extends GameObject {
 }
 
 class Ball extends GameObject{
-    constructor(width, height, posX, posY, velX, velY) {
-        super(width, height, posX, posY);
+    constructor(size, posX, posY, velX, velY) {
+        super(size, size, posX, posY);
         this.startPos = {x: posX, y: posY};
         this.vel = {x: velX, y: velY};
         this.startVel = {x: velX, y:velY}
@@ -90,10 +92,10 @@ class Ball extends GameObject{
         
         if(this.collision(object))
         {
+            console.log("bounce");
             if(this.nextPos.x > this.pos.x)
             {
                 this.nextPos.x = object.nextPos.x - this.width;
-                console.log("bounce");
             }
             else
                 this.nextPos.x = object.nextPos.x + object.width;
@@ -105,13 +107,14 @@ class Ball extends GameObject{
     calcNextFrame(screenSize) {
         if(!this.alive)
             return;
+
         super.calcNextFrame();
+
         if(this.nextPos.y < 0)
         {
             this.vel.y *= -1;
             this.nextPos.y = 0;
         }
-
         else if(this.nextPos.y + this.height > screenSize)
         {
             this.vel.y *= -1;
