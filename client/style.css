@@ -1,45 +1,60 @@
+* {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+html, body {
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
 body
 {
-    margin:0;
+    background: linear-gradient(90deg, #123456, #562356);
+}
+
+#gameSpace {
+    position: absolute;
+    display: none;
     background-color: gray;
     overflow: hidden;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
 }
 
 #player, #enemy, #ball
 {
-    transition: left 0.025s linear, top 0.025s linear;
+    transition: left 30ms linear, top 30ms linear;
 }
 
 #start
 {
     position:absolute;
     display:block;
-    top:30vh;
-    left:42.5vw;
-    height:3vw;
-    width:15vw;
     background-color: rgb(39, 65, 39);
-    font-size: 2vw;
-    font-family: 'Courier New', Courier, monospace;
+    font-size: 3vw;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
 }
 
 #waiting
 {
-    position:absolute;
-    display:none;
-    top:20vh;
-    left:42.5vw;
-    font-size: 2vw;
-    font-family: 'Courier New', Courier, monospace;
+    position: absolute;
+    display: none;
+    font-size: 3vw;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: rgb(43, 43, 43);
 }
+
 #player
 {
     position:absolute;
     display:none;
-    top:50vh;
-    left: 0vw;
-    height: 10vh;
-    width: 2vw;
     background-color: rgb(43, 43, 43);
 }
 
@@ -47,34 +62,6 @@ body
 {
     position:absolute;
     display:none;
-    top:50vh;
-    right:0vw;
-    height: 10vh;
-    width: 2vw;
-    background-color: rgb(43, 43, 43);
-}
-
-#playerScore
-{
-    position:absolute;
-    display:block;
-    top: 1h;
-    left: 1vw;
-    text-align: left;
-    font-size: 3vw;
-    font-family: 'Courier New', Courier, monospace;
-    background-color: rgb(43, 43, 43);
-}
-
-#enemyScore
-{
-    position:absolute;
-    display:block;
-    top: 1h;
-    right: 1vw;
-    text-align: left;
-    font-size: 3vw;
-    font-family: 'Courier New', Courier, monospace;
     background-color: rgb(43, 43, 43);
 }
 
@@ -82,10 +69,38 @@ body
 {
     position:absolute;
     display:none;
-    top: 0vh;
-    left:0vw;
-    height:2vw;
-    width: 2vw;
-    border-radius: 1vw;
-    background-color: blue;
+    border-radius: 100%;
+    background-color: rgb(43, 43, 43);
+}
+
+#playerScore
+{
+    position:absolute;
+    display: none;
+    top: 1vh;
+    left: 1vw;
+    text-align: left;
+    font-size: 3vw;
+    background-color: rgb(43, 43, 43);
+}
+
+#enemyScore
+{
+    position:absolute;
+    display: none;
+    top: 1vh;
+    right: 1vw;
+    text-align: left;
+    font-size: 3vw;
+    background-color: rgb(43, 43, 43);
+}
+
+#endScreen {
+    position: absolute;
+    display: none;
+    font-size: 3vw;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: rgb(43, 43, 43);
 }
