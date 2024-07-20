@@ -92,11 +92,10 @@ io.on("connection", (socket) => {
         endGame(socket.id);
     });
 
-    if (waiting !== undefined && waiting.id !== socket.id)
+    if (waiting !== undefined )
     {
         socket.join(`${lastRoomId}`);
         waiting.join(`${lastRoomId}`);
-        console.log(waiting.id, socket.id);
         io.to(`${lastRoomId}`).emit("joined", { size: SCREEN_SIZE, score: MAX_SCORE });
 
         gameClasses[`${lastRoomId}`] = 

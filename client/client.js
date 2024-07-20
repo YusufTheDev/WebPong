@@ -4,6 +4,8 @@ let maxScore;
 let leadScore;
 let backgroundAngle = 90;
 let waitingInterval;
+let loadingInterval;
+let socket = undefined;
 
 setInterval(()=>{
     backgroundAngle += 1;
@@ -29,7 +31,27 @@ window.addEventListener("resize", () => {
 
 function start()
 {
-    const socket = io("https://webpong-n5db.onrender.com");
+    document.getElementById("mainMenu").style.display = "none";
+    document.getElementById("loadingServer").style.display = "block";
+    let loadingCount = 0;
+    loadingInterval = setInterval(()=>{
+        if (loadingCount === 3)
+        {
+            document.getElementById("loadingServer").textContent = "Loading Server";
+            loadingCount = 0;
+        }
+        else{
+            document.getElementById("loadingServer").textContent += ".";
+            loadingCount += 1;
+        }
+    }, 1000);
+
+    if(socket === undefined)
+    {
+        socket = io((window.location.hostname === "localhost") ? "/" : "https://webpong-n5db.onrender.com");
+        //socket = io("https://webpong-n5db.onrender.com");
+        //socket = io();
+    }
 
     addTouchListener((pos) => {
         if (pos.y < innerHeight / 2)
@@ -75,9 +97,11 @@ function start()
     });
 
     socket.on("waiting", () => {
+        clearInterval(loadingInterval);
         let count = 0;
-        document.getElementById("waiting").style.display = "block";
         document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("loadingServer").style.display = "none";
+        document.getElementById("waiting").style.display = "block";
         waitingInterval = setInterval(() => {
             if (count === 3)
             {
@@ -93,6 +117,7 @@ function start()
     
     socket.on("joined", (data) => {
         clearInterval(waitingInterval);
+        clearInterval(loadingInterval);
         screenSize = data.size;
         maxScore = data.score;
         leadScore = 0;
@@ -102,6 +127,9 @@ function start()
         document.getElementById("mainMenu").style.display = "none";
         document.getElementById("waiting").textContent = "Waiting for Opponent";
         document.getElementById("waiting").style.display = "none";
+        document.getElementById("loadingServer").textContent = "Loading Server";
+        document.getElementById("loadingServer").style.display = "none";
+
         setWindowSize();
     });
     

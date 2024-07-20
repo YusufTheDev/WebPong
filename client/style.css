@@ -103,6 +103,17 @@ body
     font-size: 2vw;
 }
 
+#loadingServer
+{
+    position: absolute;
+    display: none;
+    font-size: 3vw;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: rgb(43, 43, 43);
+}
+
 #waiting
 {
     position: absolute;
