@@ -29,7 +29,7 @@ window.addEventListener("resize", () => {
 
 function start()
 {
-    const socket = io("/");
+    const socket = io("https://webpong-n5db.onrender.com");
 
     addTouchListener((pos) => {
         if (pos.y < innerHeight / 2)

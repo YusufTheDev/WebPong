@@ -6,7 +6,12 @@ const {Paddle, Ball} = require("./GameObjects");
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server);
+const io = socketIO(server, {
+    cors: {
+        origin: "https://yusufk26.github.io/",
+        methods: ["GET", "POST"]
+    }
+});
 const clientPath = path.join(__dirname, "../client");
 const PORT = process.env.PORT || 3000;
 app.use(express.static(clientPath));
