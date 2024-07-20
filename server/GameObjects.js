@@ -1,39 +1,39 @@
 class GameObject {
-    constructor(width, height, posX, posY) {
+    constructor(width, height, posX, posY) 
+    {
         this.width = width;
         this.height = height;
         this.pos = {x: posX, y: posY};
         this.nextPos = {x: posX , y: posY};
         this.vel = {x: 0, y: 0};
-
     }
+
     calcNextFrame()
     {
         this.nextPos.x += this.vel.x;
         this.nextPos.y += this.vel.y;
     }
+
     updateFrame()
     {
         this.pos.x = this.nextPos.x;
         this.pos.y = this.nextPos.y;
     }
+
     collision(object)
     {
         let collide = false;
-        if(this.nextPos.x + this.width >= object.nextPos.x  && this.nextPos.x <= object.nextPos.x + object.width)
-        {
-            if(this.nextPos.y + this.height >= object.nextPos.y && this.nextPos.y <= object.nextPos.y + object.height)
-            {
+        if (this.nextPos.x + this.width >= object.nextPos.x  && this.nextPos.x <= object.nextPos.x + object.width)
+            if (this.nextPos.y + this.height >= object.nextPos.y && this.nextPos.y <= object.nextPos.y + object.height)
                 collide = true;
-            }
-        }
 
         return collide;
     }
 }
 
 class Paddle extends GameObject {
-    constructor(width, height, posX, posY, speed, id) {
+    constructor(width, height, posX, posY, speed, id) 
+    {
         super(width, height, posX, posY);
         this.speed = speed;
         this.points = 0;
@@ -42,8 +42,7 @@ class Paddle extends GameObject {
 
     playerControl(keys)
     {
-        console.log("move");
-        if(keys.w === true && keys.s === true)
+        if (keys.w === true && keys.s === true)
             this.vel.y = 0;
         else if (keys.w === true)
             this.vel.y = -this.speed;
@@ -53,21 +52,19 @@ class Paddle extends GameObject {
             this.vel.y = 0;
     }
 
-    calcNextFrame(screenSize) {
+    calcNextFrame(screenSize) 
+    {
         super.calcNextFrame();
-        if(this.nextPos.y < 0)
-        {
+        if (this.nextPos.y < 0)
             this.nextPos.y = 0;
-        }
-        else if(this.nextPos.y + this.height > screenSize)
-        {
+        else if (this.nextPos.y + this.height > screenSize)
             this.nextPos.y = screenSize - this.height;
-        }
     }
 }
 
 class Ball extends GameObject{
-    constructor(size, posX, posY, velX, velY) {
+    constructor(size, posX, posY, velX, velY) 
+    {
         super(size, size, posX, posY);
         this.startPos = {x: posX, y: posY};
         this.vel = {x: velX, y: velY};
@@ -87,45 +84,51 @@ class Ball extends GameObject{
 
     paddleBounce(object)
     {
-        if(!this.alive)
+        if (!this.alive)
             return;
         
-        if(this.collision(object))
+        if (this.collision(object))
         {
-            console.log("bounce");
-            if(this.nextPos.x > this.pos.x)
-            {
+            if (this.nextPos.x > this.pos.x)
                 this.nextPos.x = object.nextPos.x - this.width;
-            }
             else
                 this.nextPos.x = object.nextPos.x + object.width;
-            this.vel.x *= -1.1;
+
+            if(this.vel.x < 0)
+            {
+                this.vel.x -= 1;
+                this.vel.x *= -1;
+            }
+            else
+            {
+                this.vel.x += 1;
+                this.vel.x *= -1;
+            }
+
             this.vel.y = ((this.nextPos.y + this.height / 2) - (object.nextPos.y + object.height / 2)) / 10;
         }
     }
 
-    calcNextFrame(screenSize) {
-        if(!this.alive)
+    calcNextFrame(screenSize) 
+    {
+        if (!this.alive)
             return;
 
         super.calcNextFrame();
 
-        if(this.nextPos.y < 0)
+        if (this.nextPos.y < 0)
         {
             this.vel.y *= -1;
             this.nextPos.y = 0;
         }
-        else if(this.nextPos.y + this.height > screenSize)
+        else if (this.nextPos.y + this.height > screenSize)
         {
             this.vel.y *= -1;
             this.nextPos.y = screenSize - this.height;
         }
 
-        if(this.nextPos.x + this.width > screenSize || this.nextPos.x < 0)
-        {
-            console.log("die");
+        if (this.nextPos.x + this.width > screenSize || this.nextPos.x < 0)
             this.alive = false;
-        }
     }
 }
 

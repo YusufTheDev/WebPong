@@ -1,22 +1,70 @@
 <!DOCTYPE html> 
 <html>
     <head>
-		<link rel="stylesheet" href="style.css">
 		<title>WebPong</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="description" content="Lightweight ping pong app designed to make ping ponging simple.">
+        <link rel="icon" type="image/x-icon" href="favicon.png">
+		<link rel="stylesheet" href="style.css">
 	</head>
     <body>
+        <div id="mainMenu">
+            <div id="titleText">WebPong</div>
+            <button id="start" onclick="start()">Enter Queue</button>
+            <button id="instructions" onclick="instructions()">Instructions</button>
+        </div>
+
         <div id="gameSpace">
             <div id="player"></div>
             <div id="enemy"></div>
             <div id="ball"></div>
         </div>
-        <button id="start" onclick="start()">Enter Queue</button>
-        <div id="waiting">Waiting</div>
+
+        <div id="instructionsText">
+            <h2>Web Pong Game Instructions</h2>
+            <h3>Objective</h3>
+            <p>Reach a score of 15 to win the game.</p>
+            
+            <h3>How to Play</h3>
+            <ol>
+                <li><strong>Start the Game:</strong> Click on the "Enter Queue" button to search for an opponent to go against.</li>
+                <li>
+                    <strong>Controls:</strong>
+                    <ul>
+                        <li>Use the <strong>W</strong> key to move the paddle up.</li>
+                        <li>Use the <strong>S</strong> key to move the paddle down.</li>
+                    </ul>
+                </li>
+                <li><strong>Gameplay:</strong> The ball will automatically serve from the center. Use your paddle to hit the ball towards your opponent. Score a point when your opponent fails to return the ball.</li>
+                <li><strong>Paddle Controls:</strong> To aim the angle of the ball, hit the ball towards the top of the paddle to aim upwards and at the bottom of the paddle to aim downwards.</li>
+                <li><strong>Winning the Game:</strong> The first player to reach 15 points wins the game. The game will automatically end and display the winner.</li>
+            </ol>
+            
+            <h3>Multiplayer</h3>
+            <p>Share the website link with your friend. Your friend can queue up on their browser to vs you.</p>
+            
+            <h3>Additional Tips</h3>
+            <p>Make sure to keep moving as if you remain stationary for over 30 seconds, you will be disconnected and as such forfeit the match.</p>
+
+            <p>Keep your paddle moving to anticipate the ball's direction. Aim your shots to make it difficult for your opponent to return.</p>
+            
+            <p>Enjoy the game and may the best player win!</p>
+            <button id="instructionsReturn" onclick="menuReturn()">Return to Main Menu</button>
+        </div>
+
+        <div id="waiting">Waiting for Opponent</div>
+        <div id="gameStartMsg"></div>
         <div id="playerScore"></div>
         <div id="enemyScore"></div>
-        <div id="endScreen"></div>
+
+        <div id="endScreen">
+            <div id="endText"></div>
+            <button id="return" onclick="menuReturn()">Return to Main Menu</button>
+        </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"></script>
+        <script src="touch.js"></script>
         <script src="client.js"></script>
     </body>
 </html>

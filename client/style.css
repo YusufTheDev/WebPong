@@ -1,8 +1,14 @@
 * {
     font-family: 'Courier New', Courier, monospace;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+    color:white;
+    touch-action:pan-y;
 }
 
-html, body {
+html, body 
+{
     margin: 0;
     overflow: hidden;
     width: 100%;
@@ -11,10 +17,11 @@ html, body {
 
 body
 {
-    background: linear-gradient(90deg, #123456, #562356);
+    background: linear-gradient(120deg, #123456, #562356);
 }
 
-#gameSpace {
+#gameSpace 
+{
     position: absolute;
     display: none;
     background-color: gray;
@@ -29,15 +36,71 @@ body
     transition: left 30ms linear, top 30ms linear;
 }
 
-#start
+#mainMenu
 {
-    position:absolute;
-    display:block;
-    background-color: rgb(39, 65, 39);
-    font-size: 3vw;
+    position: absolute;
+    display: block;
     transform: translate(-50%, -50%);
     top: 50%;
     left: 50%;
+    padding: 4vw;
+}
+
+#titleText
+{
+    display: block;
+    position: relative;
+    text-align: center;
+    Color:white;
+    font-size: 10vw;
+    margin-bottom: 5vw;
+}
+
+#start
+{
+    display:block;
+    position: relative;
+    background-color: rgb(39, 65, 30);
+    font-size: 3vw;
+    transform: translateX(-50%);
+    margin-bottom:2vw;
+    left: 50%;
+}
+
+#instructions
+{
+    display:block;
+    position: relative;
+    background-color: rgb(80, 12, 12);
+    font-size: 3vw;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+#instructionsReturn
+{
+    position: relative;
+    display: block;
+    font-size: 2vw;
+    background-color: rgb(39, 65, 39);
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+#instructionsText
+{
+    position: absolute;
+    display: none;
+    overflow-y: auto;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: rgb(43, 43, 43);
+    padding: 1vw 3vw;
+    height: fit-content;
+    max-height: 80%;
+    min-width: 80%;
+    font-size: 2vw;
 }
 
 #waiting
@@ -51,24 +114,35 @@ body
     background-color: rgb(43, 43, 43);
 }
 
+#gameStartMsg
+{
+    position: absolute;
+    display: block;
+    font-size: 3vw;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    background-color: rgb(43, 43, 43);
+}
+
 #player
 {
     position:absolute;
-    display:none;
+    display:block;
     background-color: rgb(43, 43, 43);
 }
 
 #enemy
 {
     position:absolute;
-    display:none;
+    display:block;
     background-color: rgb(43, 43, 43);
 }
 
 #ball
 {
     position:absolute;
-    display:none;
+    display:block;
     border-radius: 100%;
     background-color: rgb(43, 43, 43);
 }
@@ -98,9 +172,29 @@ body
 #endScreen {
     position: absolute;
     display: none;
-    font-size: 3vw;
     transform: translate(-50%, -50%);
     top: 50%;
     left: 50%;
     background-color: rgb(43, 43, 43);
+    padding: 4vw;
+}
+
+#endText
+{
+    display: block;
+    text-align: center;
+    font-size: 3vw;
+    color:white;
+    padding-bottom: 3vw;
+    white-space: nowrap;
+}
+
+#return
+{
+    position: relative;
+    display: block;
+    font-size: 2vw;
+    background-color: rgb(39, 65, 39);
+    transform: translateX(-50%);
+    left: 50%;
 }

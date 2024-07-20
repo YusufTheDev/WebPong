@@ -2,6 +2,16 @@ const keys = {w:false , s:false};
 let screenSize;
 let maxScore;
 let leadScore;
+let backgroundAngle = 90;
+let waitingInterval;
+
+setInterval(()=>{
+    backgroundAngle += 1;
+    if (backgroundAngle === 360) {
+        backgroundAngle = 0;
+    }
+    document.body.style.background = `linear-gradient(${backgroundAngle}deg, #123456, #562356)`;
+}, 100);
 
 function setWindowSize() {
     if (window.innerWidth > window.innerHeight) {
@@ -20,6 +30,25 @@ window.addEventListener("resize", () => {
 function start()
 {
     const socket = io("/");
+
+    addTouchListener((pos) => {
+        if (pos.y < innerHeight / 2)
+        {
+            keys.w = true;
+            keys.s = false;
+        }
+        else if (pos.y > innerHeight / 2)
+        {
+            keys.s = true;
+            keys.w = false;
+            
+        }
+        else {
+            keys.w = false;
+            keys.s = false;
+        }
+        socket.emit("keys", keys);
+    });
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "w")
@@ -43,27 +72,36 @@ function start()
             keys.s = false;
         }
         socket.emit("keys", keys);
-        console.log("ok")
     });
 
     socket.on("waiting", () => {
+        let count = 0;
         document.getElementById("waiting").style.display = "block";
-        document.getElementById("start").style.display = "none";
+        document.getElementById("mainMenu").style.display = "none";
+        waitingInterval = setInterval(() => {
+            if (count === 3)
+            {
+                document.getElementById("waiting").textContent = "Waiting for Opponent";
+                count = 0;
+            }
+            else{
+                document.getElementById("waiting").textContent += ".";
+                count += 1;
+            }
+        }, 1000);
     })
     
     socket.on("joined", (data) => {
+        clearInterval(waitingInterval);
         screenSize = data.size;
         maxScore = data.score;
         leadScore = 0;
         document.getElementById("gameSpace").style.display = "block";
-        document.getElementById("player").style.display = "block";
-        document.getElementById("enemy").style.display = "block";
-        document.getElementById("ball").style.display = "block";
         document.getElementById("playerScore").style.display = "block";
         document.getElementById("enemyScore").style.display = "block";
-        document.getElementById("start").style.display = "none";
+        document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("waiting").textContent = "Waiting for Opponent";
         document.getElementById("waiting").style.display = "none";
-        console.log("joined");
         setWindowSize();
     });
     
@@ -71,54 +109,63 @@ function start()
     
         for(let id in data)
         {
-            if(id === "ballpos")
+            if (id === "ballpos")
             {
-                // console.log(`${data[id].x}`);
                 entityDraw("ball", data[id].x, data[id].y, data[id].width, data[id].height);
                 continue;
             }
             
-            if(id === socket.id)
-            {
-                // console.log("player, " + data[id].points);
+            if (id === socket.id)
                 entityDraw("player", data[id].x, data[id].y, data[id].width, data[id].height);
-            }
-            else {
-                // console.log("enemy, " + data[id].points);
+            else 
                 entityDraw("enemy", data[id].x, data[id].y,data[id].width, data[id].height);
-            }
 
-            if(data[id].x > screenSize/2) {
+            if (data[id].x > screenSize/2) 
                 rightPointsDraw(data[id].points);
-            }
-            else {
+            else 
                 leftPointsDraw(data[id].points);
-            }
 
-            if (data[id].points > leadScore) {
+            if (data[id].points > leadScore) 
                 leadScore = data[id].points;
-            }
         }
     });
 
     socket.on("gameEnd", (data) => {
-        const endScreen = document.getElementById("endScreen");
-        if (leadScore !== maxScore) {
-            if (data === socket.id) {
-                endScreen.textContent = "lost by self disconnect";
-            } else {
-                endScreen.textContent = "won by opponent disconnect";
-            }
-        } else {
-            if (data === socket.id) {
-                endScreen.textContent = "lost by score";
-            } else {
-                endScreen.textContent = "won by score";
-            }
+        document.getElementById("gameSpace").style.display = "none";
+        document.getElementById("endScreen").style.display = "block";
+        const endText = document.getElementById("endText");
+        if (leadScore !== maxScore) 
+        {
+            if (data === socket.id) 
+                endText.textContent = "Lost by Self Disconnect";
+            else 
+                endText.textContent = "Won by Opponent Disconnect";
+        } 
+        else 
+        {
+            if (data === socket.id) 
+                endText.textContent = "Lost by Score";
+            else 
+                endText.textContent = "Won by Score";
         }
-        endScreen.style.display = "block";
+        endText.style.display = "block";
         socket.disconnect();
     });
+}
+
+function instructions()
+{
+    document.getElementById("mainMenu").style.display = "none";
+    document.getElementById("instructionsText").style.display = "block";
+}
+
+function menuReturn()
+{
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("playerScore").style.display = "none";
+    document.getElementById("enemyScore").style.display = "none";
+    document.getElementById("mainMenu").style.display = "block";
+    document.getElementById("instructionsText").style.display = "none";
 }
 
 function entityDraw(id, posx, posy, width, height)
