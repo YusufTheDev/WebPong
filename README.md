@@ -2,14 +2,6 @@
 
 WebPong is an online multiplayer ping pong game that you can play with your friends over the web. It uses WebSockets to provide real-time interaction between players.
 
-## Table of Contents
-- [Features](#features)
-- [Technologies](#technologies)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Features
 - Real-time multiplayer gameplay
 - Simple controls using 'W' and 'S' keys
