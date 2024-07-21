@@ -18,7 +18,7 @@ To get started with WebPong, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/Yusufk26/WebPong.git
+    git clone https://github.com/YusufTheDev/WebPong.git
     ```
 2. Navigate to the project directory:
     ```bash
