@@ -41,6 +41,7 @@ To get started with WebPong, follow these steps:
 To start the game server, run:
 ```bash
 npm start
+```
 
 Open your browser and go to [http://localhost:3000](http://localhost:3000). Share the URL with a friend to start playing.
 
