@@ -48,6 +48,3 @@ Open your browser and go to [http://localhost:3000](http://localhost:3000). Shar
 ### Controls
 - **Player 1**: Use the 'W' and 'S' keys to move the paddle up and down.
 - **Player 2**: Use the 'Up' and 'Down' arrow keys to move the paddle up and down.
-
-### License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
